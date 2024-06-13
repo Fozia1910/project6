@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                = "your-unique-storage-account-name"
+  name                = "proj6sa"
   resource_group_name = "your-resource-group-name"
   location            = "East US"
   account_tier        = "Standard_LRS"
