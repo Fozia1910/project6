@@ -7,6 +7,6 @@ resource "azurerm_storage_account" "storage" {
   name                = "proj6sa"
   resource_group_name = "your-resource-group-name"
   location            = "East US"
-  account_tier        = "Standard_LRS"
+  account_tier        = "Standard"
   account_replication_type = "LRS"
 }
