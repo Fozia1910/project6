@@ -3,63 +3,36 @@ resource "azurerm_resource_group" "rg" {
   location = "East US"
 }
 
-resource "azurerm_virtual_network" "vnet" {
-  name                = "tf-example-vnet"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
+resource "azurerm_storage_account" "storage" {
+  name                = "tf-example-storage"
   resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  account_tier        = "Standard_LRS"
+  account_replication_type = "LRS"
 }
 
-resource "azurerm_subnet" "subnet" {
-  name                 = "tf-example-subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
-
-resource "azurerm_network_interface" "nic" {
-  name                = "tf-example-nic"
-  location            = azurerm_resource_group.rg.location
+resource "azurerm_container_registry" "acr" {
+  name                = "tf-example-acr"
   resource_group_name = azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = "Dynamic"
+  location            = azurerm_resource_group.rg.location
+  sku {
+    name = "Standard"
   }
 }
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "tf-example-vm"
+resource "azurerm_public_ip_address" "pip" {
+  name                = "tf-example-pip"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  size                = "Standard_DS1_v2"
+  allocation_method  = "Dynamic"
+}
 
-  network_interface_ids = [
-    azurerm_network_interface.nic.id,
-  ]
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
-  }
-
-  computer_name  = "hostname"
-  admin_username = "adminuser"
-
-  admin_ssh_key {
-    username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
-
-  tags = {
-    environment = "Testing"
+resource "azurerm_app_service_plan" "asp" {
+  name                = "tf-example-asp"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku {
+    tier = "Free"
+    size = "F1"
   }
 }
