@@ -16,17 +16,13 @@ pipeline {
         }
         stage('Terraform Init') {
             steps {
-                dir('project6') {
-                    sh 'terraform init'
-                }
+                bat 'terraform init'
             }
         }
         stage('Terraform Plan & Apply') {
             steps {
-                dir('project6') {
-                    sh 'terraform plan -out=tfplan'
-                    sh 'terraform apply -auto-approve tfplan'
-                }
+                bat 'terraform plan -out=tfplan'
+                bat 'terraform apply -auto-approve tfplan'
             }
         }
     }
